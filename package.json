@@ -1,0 +1,29 @@
+{
+  "name": "cribbage-analyst-2020",
+  "version": "0.0.1",
+  "description": "2020 edition of my cribbage analysis toolset",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markafitzgerald1/cribbage-analyst-2020.git"
+  },
+  "keywords": [
+    "cribbage",
+    "crib",
+    "cards",
+    "simulation",
+    "analysis",
+    "analyst",
+    "game",
+    "play"
+  ],
+  "author": "\"Mark A. Fitzgerald\" <mark.a.fitzgerald1@gmail.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/markafitzgerald1/cribbage-analyst-2020/issues"
+  },
+  "homepage": "https://github.com/markafitzgerald1/cribbage-analyst-2020#readme"
+}
