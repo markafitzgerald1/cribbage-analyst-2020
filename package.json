@@ -4,6 +4,7 @@
   "description": "2020 edition of my cribbage analysis toolset",
   "main": "index.js",
   "scripts": {
+    "start": "parcel index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,6 +28,8 @@
   },
   "homepage": "https://github.com/markafitzgerald1/cribbage-analyst-2020#readme",
   "dependencies": {
-    "parcel-bundler": "1.12.4"
+    "parcel-bundler": "1.12.4",
+    "react": "16.12.0",
+    "react-dom": "16.12.0"
   }
 }
