@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/markafitzgerald1/cribbage-analyst-2020/issues"
   },
-  "homepage": "https://github.com/markafitzgerald1/cribbage-analyst-2020#readme"
+  "homepage": "https://github.com/markafitzgerald1/cribbage-analyst-2020#readme",
+  "dependencies": {
+    "parcel-bundler": "1.12.4"
+  }
 }
