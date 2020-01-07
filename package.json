@@ -4,7 +4,7 @@
   "description": "2020 edition of my cribbage analysis toolset",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
