@@ -12,11 +12,11 @@ class LikeButton extends React.Component {
   }
 
   render() {
-    if (this.state.liked) {
-      return "You liked this.";
-    }
-
-    return <button onClick={() => this.setState({ liked: true })}>Like</button>;
+    return this.state.liked ? (
+      "You liked this."
+    ) : (
+      <button onClick={() => this.setState({ liked: true })}>Like</button>
+    );
   }
 }
 
