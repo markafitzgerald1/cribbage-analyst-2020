@@ -8,31 +8,46 @@ import * as ReactDOM from "react-dom";
 import { List } from "immutable";
 
 enum Index {
-  ACE,
-  TWO,
-  THREE,
-  FOUR,
-  FIVE,
-  SIX,
-  SEVEN,
-  EIGHT,
-  NINE,
-  TEN,
-  JACK,
-  QUEEN,
-  KING
+  Ace,
+  Two,
+  Three,
+  Four,
+  Five,
+  Six,
+  Seven,
+  Eight,
+  Nine,
+  Ten,
+  Jack,
+  Queen,
+  King
+}
+
+const INDEX_STRINGS: List<String> = List(
+  "A,2,3,4,5,6,7,8,9,10,J,Q,K".split(",")
+);
+
+function indexString(index: Index) {
+  return INDEX_STRINGS.get(index);
 }
 
 enum Suit {
-  CLUBS,
-  DIAMONDS,
-  HEARTS,
-  SPADES
+  Clubs,
+  Diamonds,
+  Hearts,
+  Spades
 }
 
-interface Card {
-  index: Index;
-  suit: Suit;
+function suitString(suit: Suit) {
+  return "♣♢♡♠"[suit];
+}
+
+class Card {
+  constructor(readonly index: Index, readonly suit: Suit) {}
+
+  toString(): string {
+    return `${indexString(this.index)}${suitString(this.suit)}`;
+  }
 }
 
 interface DealtHand {
@@ -42,11 +57,7 @@ interface DealtHand {
 class DealtHandComponent extends React.Component<DealtHand> {
   render() {
     return this.props.cards
-      .map(card => (
-        <div key={`${card.index}-${card.suit}`}>
-          Index {card.index} - Suit {card.suit}
-        </div>
-      ))
+      .map(card => <div key={card.toString()}>{card.toString()}</div>)
       .toArray();
   }
 }
@@ -64,12 +75,12 @@ class Game extends React.Component<DealtHand> {
 ReactDOM.render(
   React.createElement(Game, {
     cards: List.of(
-      { index: Index.TWO, suit: Suit.CLUBS },
-      { index: Index.THREE, suit: Suit.DIAMONDS },
-      { index: Index.FOUR, suit: Suit.HEARTS },
-      { index: Index.EIGHT, suit: Suit.SPADES },
-      { index: Index.NINE, suit: Suit.CLUBS },
-      { index: Index.TEN, suit: Suit.DIAMONDS }
+      new Card(Index.Two, Suit.Clubs),
+      new Card(Index.Three, Suit.Diamonds),
+      new Card(Index.Four, Suit.Hearts),
+      new Card(Index.Eight, Suit.Spades),
+      new Card(Index.Nine, Suit.Clubs),
+      new Card(Index.Ten, Suit.Diamonds)
     )
   }),
   document.querySelector("#cribbage_analyst")
