@@ -90,13 +90,48 @@ class DealtHandComponent extends React.Component<DealtHand> {
   }
 }
 
+class DealtHandInput extends React.Component<{}, { value: string }> {
+  constructor(props) {
+    super(props);
+    this.state = { value: "" };
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({ value: event.target.value });
+    console.log(`Input state set to ${event.target.value}.`);
+  }
+
+  render() {
+    return (
+      <div>
+        <label>
+          Dealt Cards:
+          <input
+            type="text"
+            maxLength={6}
+            value={this.state.value}
+            onChange={this.handleChange}
+          />
+        </label>
+      </div>
+    );
+  }
+}
+
 class Game extends React.Component<DealtHand> {
   constructor(props) {
     super(props);
   }
 
   render() {
-    return <DealtHandComponent cards={this.props.cards}></DealtHandComponent>;
+    return (
+      <div>
+        <DealtHandComponent cards={this.props.cards}></DealtHandComponent>,
+        <DealtHandInput></DealtHandInput>
+      </div>
+    );
   }
 }
 
