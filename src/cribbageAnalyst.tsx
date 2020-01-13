@@ -50,6 +50,18 @@ class Card {
   }
 }
 
+interface CardComponentProps {
+  card: Card;
+}
+
+class CardComponent extends React.Component<CardComponentProps> {
+  render() {
+    return (
+      <div key={this.props.card.toString()}>{this.props.card.toString()}</div>
+    );
+  }
+}
+
 interface DealtHand {
   cards: List<Card>;
 }
@@ -57,7 +69,7 @@ interface DealtHand {
 class DealtHandComponent extends React.Component<DealtHand> {
   render() {
     return this.props.cards
-      .map(card => <div key={card.toString()}>{card.toString()}</div>)
+      .map(card => <CardComponent card={card}></CardComponent>)
       .toArray();
   }
 }
