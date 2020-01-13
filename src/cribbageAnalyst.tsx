@@ -39,7 +39,7 @@ enum Suit {
 }
 
 function suitString(suit: Suit) {
-  return "♣♢♡♠"[suit];
+  return "♣♦♥♠"[suit];
 }
 
 class Card {
@@ -54,6 +54,8 @@ interface CardComponentProps {
   card: Card;
 }
 
+const BLACK_SUITS: List<Suit> = List.of(Suit.Clubs, Suit.Spades);
+
 class CardComponent extends React.Component<CardComponentProps> {
   render() {
     return (
@@ -64,7 +66,8 @@ class CardComponent extends React.Component<CardComponentProps> {
           borderColor: "lightGrey",
           padding: "0.05em 0.185em",
           margin: "0.09em",
-          backgroundColor: "#f8f8f8"
+          backgroundColor: "#f8f8f8",
+          color: BLACK_SUITS.contains(this.props.card.suit) ? "black" : "red"
         }}
       >
         {this.props.card.toString()}
