@@ -57,7 +57,18 @@ interface CardComponentProps {
 class CardComponent extends React.Component<CardComponentProps> {
   render() {
     return (
-      <div key={this.props.card.toString()}>{this.props.card.toString()}</div>
+      <span
+        style={{
+          border: "solid",
+          borderWidth: "0.03em",
+          borderColor: "lightGrey",
+          padding: "0.05em 0.185em",
+          margin: "0.09em",
+          backgroundColor: "#f8f8f8"
+        }}
+      >
+        {this.props.card.toString()}
+      </span>
     );
   }
 }
@@ -69,7 +80,9 @@ interface DealtHand {
 class DealtHandComponent extends React.Component<DealtHand> {
   render() {
     return this.props.cards
-      .map(card => <CardComponent card={card}></CardComponent>)
+      .map(card => (
+        <CardComponent card={card} key={card.toString()}></CardComponent>
+      ))
       .toArray();
   }
 }
