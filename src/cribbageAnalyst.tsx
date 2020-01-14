@@ -128,7 +128,7 @@ class Game extends React.Component<DealtHand> {
   render() {
     return (
       <div>
-        <DealtHandComponent cards={this.props.cards}></DealtHandComponent>,
+        <DealtHandComponent cards={this.props.cards}></DealtHandComponent>
         <DealtHandInput></DealtHandInput>
       </div>
     );
