@@ -99,8 +99,27 @@ class DealtHandInput extends React.Component<{}, { value: string }> {
   }
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
-    console.log(`Input state set to ${event.target.value}.`);
+    const cardSpecifiers = event.target.value.match(
+      /(A|[2-9]|10|T|J|Q|K)([C♣D♦H♥S♠])?/gi
+    );
+    if (!cardSpecifiers) {
+      this.setState({ value: "" });
+      return;
+    }
+
+    this.setState({
+      value: cardSpecifiers
+        .map(cardSpecifier =>
+          cardSpecifier
+            .toUpperCase()
+            .replace(/^T/, "10")
+            .replace(/C$/, "♣")
+            .replace(/D$/, "♦")
+            .replace(/H$/, "♥")
+            .replace(/S$/, "♠")
+        )
+        .join(" ")
+    });
   }
 
   render() {
@@ -110,7 +129,6 @@ class DealtHandInput extends React.Component<{}, { value: string }> {
           Dealt Cards:
           <input
             type="text"
-            maxLength={6}
             value={this.state.value}
             onChange={this.handleChange}
           />
