@@ -90,16 +90,43 @@ class DealtHandComponent extends React.Component<DealtHand> {
   }
 }
 
-class DealtHandInput extends React.Component<{}, { value: string }> {
+class DealtHandInput extends React.Component<
+  { value: string; onInputChange: (event) => void },
+  {}
+> {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
-
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange(event) {
-    const cardSpecifiers = event.target.value.match(
+    this.props.onInputChange(event.target.value);
+  }
+
+  render() {
+    return (
+      <div>
+        <label>
+          Dealt Cards:
+          <input
+            type="text"
+            value={this.props.value}
+            onChange={this.handleChange}
+          />
+        </label>
+      </div>
+    );
+  }
+}
+
+class Game extends React.Component<DealtHand, { value: string }> {
+  constructor(props) {
+    super(props);
+    this.state = { value: "" };
+  }
+
+  handleHandSpecifierChange(handSpecifier: string): void {
+    const cardSpecifiers = handSpecifier.match(
       /(A|[2-9]|10|T|J|Q|K)([C♣D♦H♥S♠])?/gi
     );
     if (!cardSpecifiers) {
@@ -125,29 +152,11 @@ class DealtHandInput extends React.Component<{}, { value: string }> {
   render() {
     return (
       <div>
-        <label>
-          Dealt Cards:
-          <input
-            type="text"
-            value={this.state.value}
-            onChange={this.handleChange}
-          />
-        </label>
-      </div>
-    );
-  }
-}
-
-class Game extends React.Component<DealtHand> {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <div>
         <DealtHandComponent cards={this.props.cards}></DealtHandComponent>
-        <DealtHandInput></DealtHandInput>
+        <DealtHandInput
+          value={this.state.value}
+          onInputChange={this.handleHandSpecifierChange.bind(this)}
+        ></DealtHandInput>
       </div>
     );
   }
