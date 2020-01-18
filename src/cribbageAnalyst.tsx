@@ -59,7 +59,6 @@ interface CardComponentProps {
 }
 
 const BLACK_SUITS: List<Suit> = List.of(Suit.Clubs, Suit.Spades);
-const RED_SUITS: List<Suit> = List.of(Suit.Diamonds, Suit.Hearts);
 
 class CardComponent extends React.Component<CardComponentProps> {
   getColor(suit: Suit): string {
@@ -71,6 +70,7 @@ class CardComponent extends React.Component<CardComponentProps> {
     }
     return "red";
   }
+
   render() {
     return (
       <span
@@ -97,8 +97,11 @@ interface DealtHand {
 class DealtHandComponent extends React.Component<DealtHand> {
   render() {
     return this.props.cards
-      .map(card => (
-        <CardComponent card={card} key={card.toString()}></CardComponent>
+      .map((card, key) => (
+        <CardComponent
+          card={card}
+          key={`${card.toString()}-${key + 1}`}
+        ></CardComponent>
       ))
       .toArray();
   }
@@ -133,7 +136,7 @@ class DealtHandInput extends React.Component<
   }
 }
 
-class Game extends React.Component<DealtHand, DealtHand> {
+class Game extends React.Component<{}, DealtHand> {
   constructor(props) {
     super(props);
     this.state = { cards: List() };
@@ -158,7 +161,7 @@ class Game extends React.Component<DealtHand, DealtHand> {
         .replace(/S$/, "♠")
     );
 
-    const cards: List<Card> = List.of(
+    const newCards: List<Card> = List.of(
       ...normalizedCardSpecifiers
         .map(normalizedCardSpecifier =>
           normalizedCardSpecifier.match(/([A2-9TJQK])([♣♦♥♠]?)/)
@@ -173,14 +176,14 @@ class Game extends React.Component<DealtHand, DealtHand> {
     );
 
     this.setState({
-      cards
+      cards: newCards
     });
   }
 
   render() {
     return (
       <div>
-        <DealtHandComponent cards={this.props.cards}></DealtHandComponent>
+        <DealtHandComponent cards={this.state.cards}></DealtHandComponent>
         <DealtHandInput
           value={this.state.cards.map(card => card.toString()).join(" ")}
           onInputChange={this.handleHandSpecifierChange.bind(this)}
@@ -191,15 +194,6 @@ class Game extends React.Component<DealtHand, DealtHand> {
 }
 
 ReactDOM.render(
-  React.createElement(Game, {
-    cards: List.of(
-      new Card(Index.Two, Suit.Clubs),
-      new Card(Index.Three, Suit.Diamonds),
-      new Card(Index.Four, Suit.Hearts),
-      new Card(Index.Eight, Suit.Spades),
-      new Card(Index.Nine, Suit.Clubs),
-      new Card(Index.Ten)
-    )
-  }),
+  React.createElement(Game),
   document.querySelector("#cribbage_analyst")
 );
