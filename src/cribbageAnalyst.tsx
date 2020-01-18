@@ -43,10 +43,12 @@ function suitString(suit: Suit) {
 }
 
 class Card {
-  constructor(readonly index: Index, readonly suit: Suit) {}
+  constructor(readonly index: Index, readonly suit?: Suit) {}
 
   toString(): string {
-    return `${indexString(this.index)}${suitString(this.suit)}`;
+    return `${indexString(this.index)}${
+      typeof this.suit === "undefined" ? "?" : suitString(this.suit)
+    }`;
   }
 }
 
@@ -127,7 +129,7 @@ class Game extends React.Component<DealtHand, { value: string }> {
 
   handleHandSpecifierChange(handSpecifier: string): void {
     const cardSpecifiers = handSpecifier.match(
-      /(A|[2-9]|10|T|J|Q|K)([C♣D♦H♥S♠])?/gi
+      /(A|[2-9]|10?|T|J|Q|K)([C♣D♦H♥S♠])?/gi
     );
     if (!cardSpecifiers) {
       this.setState({ value: "" });
@@ -140,6 +142,7 @@ class Game extends React.Component<DealtHand, { value: string }> {
           cardSpecifier
             .toUpperCase()
             .replace(/^T/, "10")
+            .replace(/^10?/, "10")
             .replace(/C$/, "♣")
             .replace(/D$/, "♦")
             .replace(/H$/, "♥")
@@ -170,7 +173,7 @@ ReactDOM.render(
       new Card(Index.Four, Suit.Hearts),
       new Card(Index.Eight, Suit.Spades),
       new Card(Index.Nine, Suit.Clubs),
-      new Card(Index.Ten, Suit.Diamonds)
+      new Card(Index.Ten)
     )
   }),
   document.querySelector("#cribbage_analyst")
