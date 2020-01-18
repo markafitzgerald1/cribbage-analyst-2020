@@ -24,7 +24,7 @@ enum Index {
 }
 
 const INDEX_STRINGS: List<String> = List(
-  "A,2,3,4,5,6,7,8,9,10,J,Q,K".split(",")
+  "A,2,3,4,5,6,7,8,9,T,J,Q,K".split(",")
 );
 
 function indexString(index: Index) {
@@ -38,8 +38,10 @@ enum Suit {
   Spades
 }
 
+const SUIT_STRINGS: List<String> = List("♣♦♥♠");
+
 function suitString(suit: Suit) {
-  return "♣♦♥♠"[suit];
+  return SUIT_STRINGS.get(suit);
 }
 
 class Card {
@@ -47,7 +49,7 @@ class Card {
 
   toString(): string {
     return `${indexString(this.index)}${
-      typeof this.suit === "undefined" ? "?" : suitString(this.suit)
+      typeof this.suit === "undefined" ? "" : suitString(this.suit)
     }`;
   }
 }
@@ -57,8 +59,18 @@ interface CardComponentProps {
 }
 
 const BLACK_SUITS: List<Suit> = List.of(Suit.Clubs, Suit.Spades);
+const RED_SUITS: List<Suit> = List.of(Suit.Diamonds, Suit.Hearts);
 
 class CardComponent extends React.Component<CardComponentProps> {
+  getColor(suit: Suit): string {
+    if (typeof suit === "undefined") {
+      return "green";
+    }
+    if (BLACK_SUITS.contains(suit)) {
+      return "black";
+    }
+    return "red";
+  }
   render() {
     return (
       <span
@@ -69,7 +81,7 @@ class CardComponent extends React.Component<CardComponentProps> {
           padding: "0.05em 0.185em",
           margin: "0.09em",
           backgroundColor: "#f8f8f8",
-          color: BLACK_SUITS.contains(this.props.card.suit) ? "black" : "red"
+          color: this.getColor(this.props.card.suit)
         }}
       >
         {this.props.card.toString()}
@@ -121,10 +133,10 @@ class DealtHandInput extends React.Component<
   }
 }
 
-class Game extends React.Component<DealtHand, { value: string }> {
+class Game extends React.Component<DealtHand, DealtHand> {
   constructor(props) {
     super(props);
-    this.state = { value: "" };
+    this.state = { cards: List() };
   }
 
   handleHandSpecifierChange(handSpecifier: string): void {
@@ -132,23 +144,36 @@ class Game extends React.Component<DealtHand, { value: string }> {
       /(A|[2-9]|10?|T|J|Q|K)([C♣D♦H♥S♠])?/gi
     );
     if (!cardSpecifiers) {
-      this.setState({ value: "" });
+      this.setState({ cards: List() });
       return;
     }
 
-    this.setState({
-      value: cardSpecifiers
-        .map(cardSpecifier =>
-          cardSpecifier
-            .toUpperCase()
-            .replace(/^T/, "10")
-            .replace(/^10?/, "10")
-            .replace(/C$/, "♣")
-            .replace(/D$/, "♦")
-            .replace(/H$/, "♥")
-            .replace(/S$/, "♠")
+    const normalizedCardSpecifiers = cardSpecifiers.map(cardSpecifier =>
+      cardSpecifier
+        .toUpperCase()
+        .replace(/^10?/, "T")
+        .replace(/C$/, "♣")
+        .replace(/D$/, "♦")
+        .replace(/H$/, "♥")
+        .replace(/S$/, "♠")
+    );
+
+    const cards: List<Card> = List.of(
+      ...normalizedCardSpecifiers
+        .map(normalizedCardSpecifier =>
+          normalizedCardSpecifier.match(/([A2-9TJQK])([♣♦♥♠]?)/)
         )
-        .join(" ")
+        .map(
+          ([all, index, suit]) =>
+            new Card(
+              INDEX_STRINGS.indexOf(index),
+              suit ? SUIT_STRINGS.indexOf(suit) : undefined
+            )
+        )
+    );
+
+    this.setState({
+      cards
     });
   }
 
@@ -157,7 +182,7 @@ class Game extends React.Component<DealtHand, { value: string }> {
       <div>
         <DealtHandComponent cards={this.props.cards}></DealtHandComponent>
         <DealtHandInput
-          value={this.state.value}
+          value={this.state.cards.map(card => card.toString()).join(" ")}
           onInputChange={this.handleHandSpecifierChange.bind(this)}
         ></DealtHandInput>
       </div>
