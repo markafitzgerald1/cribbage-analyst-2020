@@ -74,6 +74,7 @@ class CardComponent extends React.Component<CardComponentProps> {
 
   handleClick(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
     console.log(`Card '${this.props.card}' has been clicked.`);
+    // TODO: add prop state setter then call it from here to remove this card!
   }
 
   static readonly MARGIN_RIGHT = 3.7;
