@@ -72,20 +72,49 @@ class CardComponent extends React.Component<CardComponentProps> {
     return "green";
   }
 
+  handleClick(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
+    console.log(`Card '${this.props.card}' has been clicked.`);
+  }
+
   render() {
     return (
       <span
         style={{
-          border: "solid",
-          borderWidth: "0.03em",
-          borderColor: "lightGrey",
-          padding: "0.05em 0.185em",
-          margin: "0.09em",
-          backgroundColor: "#f8f8f8",
-          color: this.getColor(this.props.card.suit)
+          position: "relative",
+          cursor: "pointer",
+          marginRight: 2.9
         }}
+        onClick={this.handleClick.bind(this)}
       >
-        {this.props.card.toString()}
+        <span
+          style={{
+            border: "solid",
+            borderWidth: "0.03em",
+            borderColor: "lightGrey",
+            padding: "0.05em 0.185em",
+            margin: "0.09em",
+            backgroundColor: "#f8f8f8",
+            color: this.getColor(this.props.card.suit)
+          }}
+        >
+          {this.props.card.toString()}
+        </span>
+        <span
+          style={{
+            position: "absolute",
+            top: -4,
+            right: -1.5,
+            fontSize: "x-small",
+            color: "grey",
+            border: "solid",
+            borderWidth: "0.03em",
+            borderColor: "lightGrey",
+            borderRadius: 2.9,
+            lineHeight: 0.5
+          }}
+        >
+          &times;
+        </span>
       </span>
     );
   }
@@ -129,7 +158,7 @@ class DealtHandInput extends React.Component<
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(event) {
+  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.props.onInputChange(event.target.value);
   }
 
