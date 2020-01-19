@@ -76,21 +76,25 @@ class CardComponent extends React.Component<CardComponentProps> {
     console.log(`Card '${this.props.card}' has been clicked.`);
   }
 
+  static readonly MARGIN_RIGHT = 3.7;
+  static readonly BORDER_WIDTH = "0.03em";
+  static readonly BORDER_COLOR = "lightGrey";
+
   render() {
     return (
       <span
         style={{
           position: "relative",
           cursor: "pointer",
-          marginRight: 2.9
+          marginRight: CardComponent.MARGIN_RIGHT
         }}
         onClick={this.handleClick.bind(this)}
       >
         <span
           style={{
             border: "solid",
-            borderWidth: "0.03em",
-            borderColor: "lightGrey",
+            borderWidth: CardComponent.BORDER_WIDTH,
+            borderColor: CardComponent.BORDER_COLOR,
             padding: "0.05em 0.185em",
             margin: "0.09em",
             backgroundColor: "#f8f8f8",
@@ -102,15 +106,17 @@ class CardComponent extends React.Component<CardComponentProps> {
         <span
           style={{
             position: "absolute",
-            top: -4,
-            right: -1.5,
+            top: -4.4,
+            right: -CardComponent.MARGIN_RIGHT + 1.4,
             fontSize: "x-small",
-            color: "grey",
+            color: "darkred",
             border: "solid",
-            borderWidth: "0.03em",
-            borderColor: "lightGrey",
-            borderRadius: 2.9,
-            lineHeight: 0.5
+            borderWidth: CardComponent.BORDER_WIDTH,
+            borderColor: CardComponent.BORDER_COLOR,
+            borderRadius: CardComponent.MARGIN_RIGHT,
+            lineHeight: 0.5,
+            backgroundColor: "white",
+            padding: 0.7
           }}
         >
           &times;
