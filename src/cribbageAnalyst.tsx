@@ -59,16 +59,17 @@ interface CardComponentProps {
 }
 
 const BLACK_SUITS: List<Suit> = List.of(Suit.Clubs, Suit.Spades);
+const RED_SUITS: List<Suit> = List.of(Suit.Diamonds, Suit.Hearts);
 
 class CardComponent extends React.Component<CardComponentProps> {
   getColor(suit: Suit): string {
-    if (typeof suit === "undefined") {
-      return "green";
-    }
     if (BLACK_SUITS.contains(suit)) {
       return "black";
     }
-    return "red";
+    if (RED_SUITS.contains(suit)) {
+      return "red";
+    }
+    return "green";
   }
 
   render() {
