@@ -91,13 +91,25 @@ class CardComponent extends React.Component<CardComponentProps> {
   }
 }
 
-interface DealtHand {
-  cards: List<Card>;
+class DealtHand {
+  constructor(readonly cards: List<Card>) {}
+
+  static of(...cards: Card[]): DealtHand {
+    return new DealtHand(List(cards));
+  }
+
+  toString() {
+    return this.cards.map(card => card.toString()).join(" ");
+  }
 }
 
-class DealtHandComponent extends React.Component<DealtHand> {
+interface DealtHandProps {
+  dealtHand: DealtHand;
+}
+
+class DealtHandComponent extends React.Component<DealtHandProps> {
   render() {
-    return this.props.cards
+    return this.props.dealtHand.cards
       .map((card, key) => (
         <CardComponent
           card={card}
@@ -109,7 +121,7 @@ class DealtHandComponent extends React.Component<DealtHand> {
 }
 
 class DealtHandInput extends React.Component<
-  { value: string; onInputChange: (event) => void },
+  { dealtHand: DealtHand; onInputChange: (event) => void },
   {}
 > {
   constructor(props) {
@@ -128,7 +140,9 @@ class DealtHandInput extends React.Component<
           Dealt Cards:
           <input
             type="text"
-            value={this.props.value}
+            value={this.props.dealtHand.cards
+              .map(card => card.toString())
+              .join(" ")}
             onChange={this.handleChange}
           />
         </label>
@@ -137,10 +151,10 @@ class DealtHandInput extends React.Component<
   }
 }
 
-class Game extends React.Component<{}, DealtHand> {
+class Game extends React.Component<{}, DealtHandProps> {
   constructor(props) {
     super(props);
-    this.state = { cards: List() };
+    this.state = { dealtHand: DealtHand.of() };
   }
 
   handleHandSpecifierChange(handSpecifier: string): void {
@@ -148,7 +162,7 @@ class Game extends React.Component<{}, DealtHand> {
       /(A|[2-9]|10?|T|J|Q|K)([C♣D♦H♥S♠])?/gi
     );
     if (!cardSpecifiers) {
-      this.setState({ cards: List() });
+      this.setState({ dealtHand: DealtHand.of() });
       return;
     }
 
@@ -177,16 +191,18 @@ class Game extends React.Component<{}, DealtHand> {
     );
 
     this.setState({
-      cards: newCards
+      dealtHand: new DealtHand(newCards)
     });
   }
 
   render() {
     return (
       <div>
-        <DealtHandComponent cards={this.state.cards}></DealtHandComponent>
+        <DealtHandComponent
+          dealtHand={this.state.dealtHand}
+        ></DealtHandComponent>
         <DealtHandInput
-          value={this.state.cards.map(card => card.toString()).join(" ")}
+          dealtHand={this.state.dealtHand}
           onInputChange={this.handleHandSpecifierChange.bind(this)}
         ></DealtHandInput>
       </div>
