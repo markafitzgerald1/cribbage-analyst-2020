@@ -56,6 +56,7 @@ class Card {
 
 interface CardComponentProps {
   card: Card;
+  delete: (Card) => void;
 }
 
 const BLACK_SUITS: List<Suit> = List.of(Suit.Clubs, Suit.Spades);
@@ -73,8 +74,7 @@ class CardComponent extends React.Component<CardComponentProps> {
   }
 
   handleClick(event: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
-    console.log(`Card '${this.props.card}' has been clicked.`);
-    // TODO: add prop state setter then call it from here to remove this card!
+    this.props.delete(this.props.card);
   }
 
   static readonly MARGIN_RIGHT = 3.7;
@@ -141,6 +141,7 @@ class DealtHand {
 
 interface DealtHandProps {
   dealtHand: DealtHand;
+  delete: (Card) => void;
 }
 
 class DealtHandComponent extends React.Component<DealtHandProps> {
@@ -149,6 +150,7 @@ class DealtHandComponent extends React.Component<DealtHandProps> {
       .map((card, key) => (
         <CardComponent
           card={card}
+          delete={this.props.delete}
           key={`${card.toString()}-${key + 1}`}
         ></CardComponent>
       ))
@@ -187,7 +189,11 @@ class DealtHandInput extends React.Component<
   }
 }
 
-class Game extends React.Component<{}, DealtHandProps> {
+interface GameProps {
+  dealtHand: DealtHand;
+}
+
+class Game extends React.Component<{}, GameProps> {
   constructor(props) {
     super(props);
     this.state = { dealtHand: DealtHand.of() };
@@ -231,11 +237,22 @@ class Game extends React.Component<{}, DealtHandProps> {
     });
   }
 
+  delete(card: Card): void {
+    this.setState({
+      dealtHand: new DealtHand(
+        this.state.dealtHand.cards.filter(
+          dealtHandCard => dealtHandCard !== card
+        )
+      )
+    });
+  }
+
   render() {
     return (
       <div>
         <DealtHandComponent
           dealtHand={this.state.dealtHand}
+          delete={this.delete.bind(this)}
         ></DealtHandComponent>
         <DealtHandInput
           dealtHand={this.state.dealtHand}
