@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { List } from "immutable";
+import { List, ValueObject, hash } from "immutable";
 
 enum Index {
   Ace,
@@ -44,8 +44,24 @@ function suitString(suit: Suit) {
   return SUIT_STRINGS.get(suit);
 }
 
-class Card {
+class Card implements ValueObject {
   constructor(readonly index: Index, readonly suit?: Suit) {}
+
+  equals(other: any): boolean {
+    if (other instanceof Card) {
+      return (
+        typeof other.suit !== "undefined" &&
+        other.index === this.index &&
+        other.suit === this.suit
+      );
+    }
+    return false;
+  }
+
+  hashCode(): number {
+    const PRIME = 31;
+    return PRIME * (PRIME + hash(this.index)) + hash(this.suit);
+  }
 
   toString(): string {
     return `${indexString(this.index)}${
@@ -230,7 +246,9 @@ class Game extends React.Component<{}, GameProps> {
               suit ? SUIT_STRINGS.indexOf(suit) : undefined
             )
         )
-    );
+    )
+      .toOrderedSet()
+      .toList();
 
     this.setState({
       dealtHand: new DealtHand(newCards)
