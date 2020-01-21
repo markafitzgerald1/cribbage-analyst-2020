@@ -250,6 +250,8 @@ class Game extends React.Component<{}, GameProps> {
       .toOrderedSet()
       .toList();
 
+    // TODO: filter out indices occurring for the fifth or more time.
+
     this.setState({
       dealtHand: new DealtHand(newCards)
     });
