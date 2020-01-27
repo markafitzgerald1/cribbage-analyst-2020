@@ -6,6 +6,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { List, ValueObject, hash } from "immutable";
+import Keycode from "keycode";
 
 enum Index {
   Ace,
@@ -162,45 +163,20 @@ interface DealtHandProps {
 
 class DealtHandComponent extends React.Component<DealtHandProps> {
   render() {
-    return this.props.dealtHand.cards
-      .map((card, key) => (
-        <CardComponent
-          card={card}
-          delete={this.props.delete}
-          key={`${card.toString()}-${key + 1}`}
-        ></CardComponent>
-      ))
-      .toArray();
-  }
-}
-
-class DealtHandInput extends React.Component<
-  { dealtHand: DealtHand; onInputChange: (event) => void },
-  {}
-> {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    this.props.onInputChange(event.target.value);
-  }
-
-  render() {
-    return (
-      <div>
-        <label>
-          Dealt Cards:
-          <input
-            type="text"
-            value={this.props.dealtHand.cards
-              .map(card => card.toString())
-              .join(" ")}
-            onChange={this.handleChange}
-          />
-        </label>
+    return this.props.dealtHand.cards.isEmpty() ? (
+      <div style={{ color: "grey", fontStyle: "italic" }}>
+        Enter cards to be analyzed
       </div>
+    ) : (
+      this.props.dealtHand.cards
+        .map((card, key) => (
+          <CardComponent
+            card={card}
+            delete={this.props.delete}
+            key={`${card.toString()}-${key + 1}`}
+          ></CardComponent>
+        ))
+        .toArray()
     );
   }
 }
@@ -215,6 +191,50 @@ class Game extends React.Component<{}, GameProps> {
     this.state = { dealtHand: DealtHand.of() };
   }
 
+  componentDidMount() {
+    document.addEventListener(
+      "keypress",
+      this.handleKeyPress.bind(this),
+      false
+    );
+    document.addEventListener("keydown", this.handleKeyDown.bind(this), false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener(
+      "keypress",
+      this.handleKeyPress.bind(this),
+      false
+    );
+    document.removeEventListener(
+      "keydown",
+      this.handleKeyDown.bind(this),
+      false
+    );
+  }
+
+  handleKeyPress(event: KeyboardEvent): any {
+    // TODO: simplify: do I really need to stringify DealtHand here?
+    this.handleHandSpecifierChange(this.state.dealtHand.toString() + event.key);
+  }
+
+  handleKeyDown(event: KeyboardEvent): any {
+    if (event.keyCode === Keycode("Escape")) {
+      this.setState({
+        dealtHand: DealtHand.of()
+      });
+    } else if (
+      event.keyCode === Keycode("Delete") ||
+      event.keyCode === Keycode("Backspace")
+    ) {
+      this.setState({
+        dealtHand: new DealtHand(this.state.dealtHand.cards.pop())
+      });
+      event.preventDefault();
+    }
+  }
+
+  // TODO: inline into handleKeyPress then simplify
   handleHandSpecifierChange(handSpecifier: string): void {
     const cardSpecifiers = handSpecifier.match(
       /(A|[2-9]|10?|T|J|Q|K)([C♣D♦H♥S♠])?/gi
@@ -266,14 +286,13 @@ class Game extends React.Component<{}, GameProps> {
   render() {
     return (
       <div>
+        <h1 style={{ marginTop: 0, marginBottom: 10 }}>
+          Cribbage Analyst 2020
+        </h1>
         <DealtHandComponent
           dealtHand={this.state.dealtHand}
           delete={this.delete.bind(this)}
         ></DealtHandComponent>
-        <DealtHandInput
-          dealtHand={this.state.dealtHand}
-          onInputChange={this.handleHandSpecifierChange.bind(this)}
-        ></DealtHandInput>
       </div>
     );
   }
