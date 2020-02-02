@@ -46,7 +46,7 @@ function suitString(suit: Suit) {
 }
 
 class Card implements ValueObject {
-  constructor(readonly index: Index, readonly suit?: Suit) {}
+  constructor(readonly index?: Index, readonly suit?: Suit) {}
 
   equals(other: any): boolean {
     if (other instanceof Card) {
@@ -65,9 +65,9 @@ class Card implements ValueObject {
   }
 
   toString(): string {
-    return `${indexString(this.index)}${
-      typeof this.suit === "undefined" ? "" : suitString(this.suit)
-    }`;
+    return `${
+      typeof this.index === "undefined" ? "?" : indexString(this.index)
+    }${typeof this.suit === "undefined" ? "?" : suitString(this.suit)}`;
   }
 }
 
@@ -213,11 +213,6 @@ class Game extends React.Component<{}, GameProps> {
     );
   }
 
-  handleKeyPress(event: KeyboardEvent): any {
-    // TODO: simplify: do I really need to stringify DealtHand here?
-    this.handleHandSpecifierChange(this.state.dealtHand.toString() + event.key);
-  }
-
   handleKeyDown(event: KeyboardEvent): any {
     if (event.keyCode === Keycode("Escape")) {
       this.setState({
@@ -234,43 +229,55 @@ class Game extends React.Component<{}, GameProps> {
     }
   }
 
-  // TODO: inline into handleKeyPress then simplify
-  handleHandSpecifierChange(handSpecifier: string): void {
-    const cardSpecifiers = handSpecifier.match(
-      /(A|[2-9]|10?|T|J|Q|K)([C♣D♦H♥S♠])?/gi
-    );
-    if (!cardSpecifiers) {
-      this.setState({ dealtHand: DealtHand.of() });
-      return;
+  handleKeyPress(event: KeyboardEvent): any {
+    if (event.key.match(/^[A2-91TJQK]$/i)) {
+      this.setState((prevState, props) => {
+        return {
+          dealtHand: new DealtHand(
+            prevState.dealtHand.cards.push(
+              new Card(
+                INDEX_STRINGS.indexOf(
+                  event.key.toUpperCase().replace(/^10?/, "T")
+                )
+              )
+            )
+          )
+        };
+      });
+      return undefined;
     }
 
-    const normalizedCardSpecifiers = cardSpecifiers.map(cardSpecifier =>
-      cardSpecifier
-        .toUpperCase()
-        .replace(/^10?/, "T")
-        .replace(/C$/, "♣")
-        .replace(/D$/, "♦")
-        .replace(/H$/, "♥")
-        .replace(/S$/, "♠")
-    );
+    if (event.key.match(/^[CDHS♣♦♥♠]$/i)) {
+      const suit: number = SUIT_STRINGS.indexOf(
+        event.key
+          .toUpperCase()
+          .replace(/[C♧]/, "♣")
+          .replace(/[D♢]/, "♦")
+          .replace(/[H♡]/, "♥")
+          .replace(/[S♤]/, "♠")
+      );
 
-    const newCards: List<Card> = List.of(
-      ...normalizedCardSpecifiers
-        .map(normalizedCardSpecifier =>
-          normalizedCardSpecifier.match(/([A2-9TJQK])([♣♦♥♠]?)/)
-        )
-        .map(
-          ([all, index, suit]) =>
-            new Card(
-              INDEX_STRINGS.indexOf(index),
-              suit ? SUIT_STRINGS.indexOf(suit) : undefined
+      this.setState((prevState, props) => {
+        const lastCard: Card = prevState.dealtHand.cards.last(new Card());
+        if (typeof lastCard.suit === "undefined") {
+          return {
+            dealtHand: new DealtHand(
+              prevState.dealtHand.cards
+                .pop()
+                .push(new Card(lastCard.index, suit))
             )
-        )
-    );
+          };
+        }
 
-    this.setState({
-      dealtHand: new DealtHand(newCards)
-    });
+        return {
+          dealtHand: new DealtHand(
+            prevState.dealtHand.cards.push(new Card(undefined, suit))
+          )
+        };
+      });
+
+      return undefined;
+    }
   }
 
   delete(card: Card): void {
