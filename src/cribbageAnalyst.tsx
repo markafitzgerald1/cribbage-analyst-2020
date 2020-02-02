@@ -24,11 +24,11 @@ enum Index {
   King
 }
 
-const INDEX_STRINGS: List<String> = List(
+const INDEX_STRINGS: List<string> = List(
   "A,2,3,4,5,6,7,8,9,T,J,Q,K".split(",")
 );
 
-function indexString(index: Index) {
+function indexString(index: Index): string {
   return INDEX_STRINGS.get(index);
 }
 
@@ -39,9 +39,9 @@ enum Suit {
   Spades
 }
 
-const SUIT_STRINGS: List<String> = List("♣♦♥♠");
+const SUIT_STRINGS: List<string> = List("♣♦♥♠");
 
-function suitString(suit: Suit) {
+function suitString(suit: Suit): string {
   return SUIT_STRINGS.get(suit);
 }
 
@@ -65,9 +65,18 @@ class Card implements ValueObject {
   }
 
   toString(): string {
-    return `${
-      typeof this.index === "undefined" ? "?" : indexString(this.index)
-    }${typeof this.suit === "undefined" ? "?" : suitString(this.suit)}`;
+    const hasIndex = !(typeof this.index === "undefined");
+    const hasSuit = !(typeof this.suit === "undefined");
+
+    if (hasIndex) {
+      if (hasSuit) {
+        return `${indexString(this.index)}${suitString(this.suit)}`;
+      }
+
+      return indexString(this.index);
+    }
+
+    return `?${hasSuit ? suitString(this.suit) : ""}`;
   }
 }
 
