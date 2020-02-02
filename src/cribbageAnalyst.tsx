@@ -222,8 +222,24 @@ class Game extends React.Component<{}, GameProps> {
       event.keyCode === Keycode("Delete") ||
       event.keyCode === Keycode("Backspace")
     ) {
-      this.setState({
-        dealtHand: new DealtHand(this.state.dealtHand.cards.pop())
+      this.setState((prevState, props) => {
+        if (
+          typeof prevState.dealtHand.cards.last(new Card()).index ===
+            "undefined" ||
+          typeof prevState.dealtHand.cards.last(new Card()).suit === "undefined"
+        ) {
+          return {
+            dealtHand: new DealtHand(this.state.dealtHand.cards.pop())
+          };
+        }
+
+        return {
+          dealtHand: new DealtHand(
+            this.state.dealtHand.cards
+              .pop()
+              .push(new Card(this.state.dealtHand.cards.last(new Card()).index))
+          )
+        };
       });
       event.preventDefault();
     }
