@@ -246,15 +246,17 @@ class Game extends React.Component<{}, GameProps> {
   }
 
   handleKeyPress(event: KeyboardEvent): any {
-    if (event.key.match(/^[A2-91TJQK]$/i)) {
+    if (event.key.match(/^[A2-91TJQK?]$/i)) {
       this.setState((prevState, props) => {
         return {
           dealtHand: new DealtHand(
             prevState.dealtHand.cards.push(
               new Card(
-                INDEX_STRINGS.indexOf(
-                  event.key.toUpperCase().replace(/^10?/, "T")
-                )
+                event.key === "?"
+                  ? undefined
+                  : INDEX_STRINGS.indexOf(
+                      event.key.toUpperCase().replace(/^10?/, "T")
+                    )
               )
             )
           )
