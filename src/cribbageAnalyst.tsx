@@ -256,6 +256,7 @@ class Game extends React.Component<{}, GameProps> {
 
   handleKeyPress(event: KeyboardEvent): any {
     if (event.key.match(/^[A2-91TJQK?]$/i)) {
+      // TODO: allow add of index to last card if it has no index
       this.setState((prevState, props) => {
         return {
           dealtHand: new DealtHand(
