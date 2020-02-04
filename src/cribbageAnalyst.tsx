@@ -256,22 +256,31 @@ class Game extends React.Component<{}, GameProps> {
 
   handleKeyPress(event: KeyboardEvent): any {
     if (event.key.match(/^[A2-91TJQK?]$/i)) {
-      // TODO: allow add of index to last card if it has no index
+      const index: number = INDEX_STRINGS.indexOf(
+        event.key.toUpperCase().replace(/^10?/, "T")
+      );
+
       this.setState((prevState, props) => {
+        const lastCard: Card = prevState.dealtHand.cards.last(new Card());
+        if (typeof lastCard.index === "undefined") {
+          return {
+            dealtHand: new DealtHand(
+              prevState.dealtHand.cards
+                .pop()
+                .push(new Card(index, lastCard.suit))
+            )
+          };
+        }
+
         return {
           dealtHand: new DealtHand(
             prevState.dealtHand.cards.push(
-              new Card(
-                event.key === "?"
-                  ? undefined
-                  : INDEX_STRINGS.indexOf(
-                      event.key.toUpperCase().replace(/^10?/, "T")
-                    )
-              )
+              new Card(event.key === "?" ? undefined : index)
             )
           )
         };
       });
+
       return undefined;
     }
 
