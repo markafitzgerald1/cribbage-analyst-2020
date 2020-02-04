@@ -7,6 +7,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { List, ValueObject, hash } from "immutable";
 import Keycode from "keycode";
+import { combination } from "js-combinatorics";
 
 enum Index {
   Ace,
@@ -165,27 +166,72 @@ class DealtHand {
   }
 }
 
+const toCardComponent = (
+  deleteCard: (card: Card) => void,
+  keyPrefix?: string
+) => (card: Card, key: number): JSX.Element => (
+  <CardComponent
+    card={card}
+    delete={deleteCard}
+    key={`${keyPrefix || ""}${card.toString()}-${key + 1}`}
+  ></CardComponent>
+);
+
 interface DealtHandProps {
   dealtHand: DealtHand;
   delete: (Card) => void;
 }
 
+const PLACEHOLDER_TEXT_STYLE: object = { color: "grey", fontStyle: "italic" };
+
 class DealtHandComponent extends React.Component<DealtHandProps> {
   render() {
     return this.props.dealtHand.cards.isEmpty() ? (
-      <div style={{ color: "grey", fontStyle: "italic" }}>
-        Enter cards to be analyzed
-      </div>
+      <div style={PLACEHOLDER_TEXT_STYLE}>Enter cards to be analyzed</div>
     ) : (
       this.props.dealtHand.cards
-        .map((card, key) => (
-          <CardComponent
-            card={card}
-            delete={this.props.delete}
-            key={`${card.toString()}-${key + 1}`}
-          ></CardComponent>
-        ))
+        .map(toCardComponent(this.props.delete))
         .toArray()
+    );
+  }
+}
+
+class PossibleKeptHands extends React.Component<DealtHandProps> {
+  static readonly KEPT_HAND_SIZE: number = 4;
+
+  // FIXME: filter out duplicates (e.g. two ways to discard the same thing in a suitless
+  // hand) as otherwise React misbehaves after many UI actions
+  render() {
+    return this.props.dealtHand.cards.size <
+      PossibleKeptHands.KEPT_HAND_SIZE ? (
+      <span style={PLACEHOLDER_TEXT_STYLE}>
+        (this is where the analysis will go)
+      </span>
+    ) : (
+      combination(
+        this.props.dealtHand.cards.toArray(),
+        PossibleKeptHands.KEPT_HAND_SIZE
+      ).map(possibleKeep => (
+        <div key={possibleKeep.join("-")}>
+          Keep{" "}
+          {possibleKeep.map(
+            toCardComponent(
+              this.props.delete,
+              `keep-${possibleKeep.join("-")}-kept-`
+            )
+          )}
+          , discard{" "}
+          {this.props.dealtHand.cards
+            .filter(value => !possibleKeep.includes(value))
+            .map(
+              toCardComponent(
+                this.props.delete,
+                `keep-${possibleKeep.join("-")}-discarded-`
+              )
+            )}{" "}
+          = ? points.
+        </div>
+      ))
     );
   }
 }
@@ -337,6 +383,7 @@ class Game extends React.Component<{}, GameProps> {
           dealtHand={this.state.dealtHand}
           delete={this.delete.bind(this)}
         ></DealtHandComponent>
+        <PossibleKeptHands dealtHand={this.state.dealtHand}></PossibleKeptHands>
       </div>
     );
   }
