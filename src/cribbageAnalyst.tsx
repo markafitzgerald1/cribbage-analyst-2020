@@ -196,20 +196,23 @@ class DealtHandComponent extends React.Component<DealtHandProps> {
   }
 }
 
-class PossibleKeptHands extends React.Component<DealtHandProps> {
+interface KeptHandProps {
+  keptHand: DealtHand;
+}
+
+class PossibleKeptHands extends React.Component<KeptHandProps> {
   static readonly KEPT_HAND_SIZE: number = 4;
 
   // FIXME: filter out duplicates (e.g. two ways to discard the same thing in a suitless
   // hand) as otherwise React misbehaves after many UI actions
   render() {
-    return this.props.dealtHand.cards.size <
-      PossibleKeptHands.KEPT_HAND_SIZE ? (
+    return this.props.keptHand.cards.size < PossibleKeptHands.KEPT_HAND_SIZE ? (
       <span style={PLACEHOLDER_TEXT_STYLE}>
         (this is where the analysis will go)
       </span>
     ) : (
       combination(
-        this.props.dealtHand.cards.toArray(),
+        this.props.keptHand.cards.toArray(),
         PossibleKeptHands.KEPT_HAND_SIZE
       ).map(possibleKeep => (
         <div key={possibleKeep.join("-")}>
@@ -221,7 +224,7 @@ class PossibleKeptHands extends React.Component<DealtHandProps> {
             )
           )}
           , discard{" "}
-          {this.props.dealtHand.cards
+          {this.props.keptHand.cards
             .filter(value => !possibleKeep.includes(value))
             .map(
               toCardComponent(
@@ -383,7 +386,7 @@ class Game extends React.Component<{}, GameProps> {
           dealtHand={this.state.dealtHand}
           delete={this.delete.bind(this)}
         ></DealtHandComponent>
-        <PossibleKeptHands dealtHand={this.state.dealtHand}></PossibleKeptHands>
+        <PossibleKeptHands keptHand={this.state.dealtHand}></PossibleKeptHands>
       </div>
     );
   }
